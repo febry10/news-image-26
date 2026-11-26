@@ -1,88 +1,83 @@
-// The World Today — 26 November 2026
-// Entry point: validate poster.png and copy it byte-for-byte to the
-// output directory as entry.png.
+// "The World Today" — one-image summary of Thursday 26 November 2026.
+// make.fun competition: news-image-20261126.
 //
-// Usage:  MAKEFUN_OUTPUT_DIR=/output node main.ts
-// (MAKEFUN_OUTPUT_DIR defaults to /output when unset.)
-//
-// Node standard library only — no network, no clock, no randomness.
+// poster.png is the entry: a broadsheet front page typeset in poster.html
+// and rendered a single time with headless Chromium. This program guards
+// it on the way out — it inspects the PNG's structure (signature, IHDR
+// dimensions, closing IEND chunk, byte size), refuses to ship anything
+// that fails an inspection, and otherwise copies the file unchanged to
+// <output>/entry.png and re-reads the copy to prove the bytes survived.
+// Standard library only; no network, clock or randomness, so repeated
+// runs are byte-identical.
 
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const MAX_BYTES = 1_048_576;
-const EXPECTED_WIDTH = 1024;
-const EXPECTED_HEIGHT = 1024;
+const LIMIT_BYTES = 1_048_576; // 1 MiB, the bounty's hard cap
+const REQUIRED_SIDE = 1024; // the bounty asks for exactly 1024 x 1024
 
-// PNG signature: 89 50 4E 47 0D 0A 1A 0A
-const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-// IEND chunk tail: length 0, type "IEND", CRC AE 42 60 82
-const IEND_TAIL = Buffer.from([
-  0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
-]);
+function digestHex(bytes: Buffer): string {
+  return createHash("sha256").update(bytes).digest("hex");
+}
 
-function fail(message: string): never {
-  console.error(`error: ${message}`);
+function refuse(reason: string): never {
+  console.error(`world-today-26: refusing to ship — ${reason}`);
   process.exit(1);
 }
 
+// The PNG header layout this relies on: bytes 0..7 are the signature,
+// bytes 8..11 the first chunk's length, bytes 12..15 its type ("IHDR"),
+// and bytes 16..23 the width and height as big-endian uint32 values.
+function inspect(bytes: Buffer): void {
+  const magic = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  const hasMagic =
+    bytes.length >= magic.length && magic.every((b, i) => bytes[i] === b);
+  if (!hasMagic) refuse("poster.png does not open with the PNG signature");
+
+  if (bytes.length > LIMIT_BYTES) {
+    refuse(`poster.png weighs ${bytes.length} bytes; the cap is ${LIMIT_BYTES}`);
+  }
+
+  if (bytes.length < 24 || bytes.toString("latin1", 12, 16) !== "IHDR") {
+    refuse("poster.png has no IHDR chunk at the expected offset");
+  }
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const width = view.getUint32(16);
+  const height = view.getUint32(20);
+  if (width !== REQUIRED_SIDE || height !== REQUIRED_SIDE) {
+    refuse(`poster.png measures ${width}x${height}, not ${REQUIRED_SIDE}x${REQUIRED_SIDE}`);
+  }
+
+  const tailType = bytes.toString("latin1", bytes.length - 8, bytes.length - 4);
+  if (tailType !== "IEND") {
+    refuse("poster.png does not close with an IEND chunk (truncated?)");
+  }
+}
+
 function main(): void {
-  const here = dirname(fileURLToPath(import.meta.url));
-  const sourcePath = join(here, "poster.png");
-
-  if (!existsSync(sourcePath)) {
-    fail(`poster.png not found next to main.ts (${sourcePath})`);
+  const folder = path.dirname(fileURLToPath(import.meta.url));
+  const posterPath = path.join(folder, "poster.png");
+  if (!fs.existsSync(posterPath)) {
+    refuse(`poster.png is missing next to main.ts (${posterPath})`);
   }
 
-  const png = readFileSync(sourcePath);
+  const poster = fs.readFileSync(posterPath);
+  inspect(poster);
 
-  // 1. Magic bytes: must be a PNG.
-  if (png.length < PNG_MAGIC.length || !png.subarray(0, 8).equals(PNG_MAGIC)) {
-    fail("poster.png is not a PNG file (bad magic bytes)");
-  }
-
-  // 2. Size cap: at most 1 MiB.
-  if (png.length > MAX_BYTES) {
-    fail(`poster.png is ${png.length} bytes, over the ${MAX_BYTES} byte cap`);
-  }
-
-  // 3. Dimensions from the IHDR chunk (width at bytes 16-19,
-  //    height at bytes 20-23, big-endian uint32).
-  if (png.length < 24 || png.toString("ascii", 12, 16) !== "IHDR") {
-    fail("poster.png has no IHDR chunk where one was expected");
-  }
-  const width = png.readUInt32BE(16);
-  const height = png.readUInt32BE(20);
-  if (width !== EXPECTED_WIDTH || height !== EXPECTED_HEIGHT) {
-    fail(
-      `poster.png is ${width}x${height}, expected ${EXPECTED_WIDTH}x${EXPECTED_HEIGHT}`,
-    );
-  }
-
-  // 4. Must end with the IEND chunk.
-  if (png.length < IEND_TAIL.length || !png.subarray(-12).equals(IEND_TAIL)) {
-    fail("poster.png does not end with an IEND chunk");
-  }
-
-  // 5. Copy byte-for-byte to the output directory as entry.png.
   const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-  mkdirSync(outDir, { recursive: true });
-  const outPath = join(outDir, "entry.png");
-  copyFileSync(sourcePath, outPath);
+  fs.mkdirSync(outDir, { recursive: true });
+  const entryPath = path.join(outDir, "entry.png");
+  fs.writeFileSync(entryPath, poster);
 
-  // 6. Verify the copy: same size and same sha256.
-  const copied = readFileSync(outPath);
-  const sourceHash = createHash("sha256").update(png).digest("hex");
-  const copiedHash = createHash("sha256").update(copied).digest("hex");
-  if (copied.length !== png.length || copiedHash !== sourceHash) {
-    fail("entry.png does not match poster.png after copying");
+  const shipped = fs.readFileSync(entryPath);
+  if (shipped.length !== poster.length || digestHex(shipped) !== digestHex(poster)) {
+    refuse("entry.png came out different from poster.png after copying");
   }
 
   console.log(
-    `ok: poster.png ${width}x${height}, ${png.length} bytes, ` +
-      `sha256 ${sourceHash} -> ${outPath}`,
+    `world-today-26: poster.png ok — ${poster.length} bytes, sha256 ${digestHex(poster)} -> ${entryPath}`,
   );
 }
 
