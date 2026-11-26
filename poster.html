@@ -2,194 +2,246 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The World Today — Thursday 26 November 2026</title>
+<title>The World Today — Thursday, 26 November 2026</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 1024px; height: 1024px; overflow: hidden; }
   body {
-    background: #f8f4e9;
-    color: #141310;
-    font-family: Georgia, 'Times New Roman', serif;
-    padding: 16px 30px 10px 30px;
+    width: 1024px; height: 1024px;
+    background: #f6f1e6;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: #16130e;
+    overflow: hidden;
   }
-  .sans { font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .page { width: 1024px; height: 1024px; padding: 16px 36px 12px; }
 
-  /* ---------- masthead ---------- */
-  .topline {
+  /* ---- top kicker ---- */
+  .kicker {
     display: flex; justify-content: space-between;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
-    border-bottom: 1px solid #141310; padding-bottom: 4px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    border-bottom: 1px solid #16130e; padding-bottom: 4px;
   }
+  .kicker span:nth-child(2) { letter-spacing: 4px; }
+
+  /* ---- masthead ---- */
   h1.masthead {
-    text-align: center; font-size: 53px; font-weight: 900;
-    letter-spacing: 1px; line-height: 1.02; padding: 5px 0 4px 0;
+    text-align: center;
+    font-size: 70px; line-height: 1.02; font-weight: 900;
+    letter-spacing: 1px; padding: 5px 0 4px;
+    border-bottom: 4px solid #16130e;
   }
   .dateline {
-    display: flex; justify-content: space-between; align-items: center;
-    border-top: 3px solid #141310; border-bottom: 1px solid #141310;
-    padding: 4px 2px;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 14.5px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid #16130e; padding: 5px 0;
+    font-family: Arial, Helvetica, sans-serif; font-size: 12px;
   }
-  .dateline .date { font-weight: 700; letter-spacing: 0.4px; }
-  .dateline .mid { color: #b3001b; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; font-size: 12.5px; }
-
-  /* ---------- lead ---------- */
-  .lead { display: grid; grid-template-columns: 496px 444px; gap: 24px; margin-top: 8px; }
-  .kicker {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 12.5px; font-weight: 700; letter-spacing: 2.2px;
-    color: #b3001b; text-transform: uppercase; margin-bottom: 6px;
-  }
-  .lead h2 { font-size: 40px; line-height: 1.04; font-weight: 900; }
-  .lead p { font-size: 16.4px; line-height: 1.34; margin-top: 6px; text-align: justify; }
-  .stats {
-    display: flex; gap: 8px; margin-top: 8px;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-  }
-  .stats div {
-    border: 1.5px solid #141310; padding: 5px 8px 4px 8px; text-align: center;
-  }
-  .stats b { display: block; font-size: 15.5px; }
-  .stats span { font-size: 9.5px; letter-spacing: 1.2px; text-transform: uppercase; }
-  .lead figure img { width: 444px; height: 190px; object-fit: cover; display: block; }
-  .lead figcaption {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 11.5px; color: #44423a; margin-top: 4px; line-height: 1.3;
+  .dateline .date { font-weight: bold; }
+  .dateline .teaser {
+    color: #a31621; font-weight: bold; letter-spacing: 1px;
+    text-transform: uppercase; font-size: 11px;
   }
 
-  .rule { border-top: 2.5px solid #141310; margin: 6px 0 6px 0; }
+  /* ---- lead story ---- */
+  .lead { display: flex; gap: 20px; padding: 9px 0 8px; border-bottom: 1px solid #16130e; }
+  .lead-text { width: 532px; flex: none; }
+  .lead-photo { width: 400px; flex: none; }
+  .tag {
+    color: #a31621; font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px; font-weight: bold; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .lead-text h2 {
+    font-size: 37px; line-height: 1.04; font-weight: 900; margin-bottom: 7px;
+  }
+  .lead-text p.body {
+    font-size: 13.5px; line-height: 1.42; text-align: justify; margin-bottom: 9px;
+  }
+  .lead-text p.body b { font-weight: bold; }
+  .stats { display: flex; gap: 8px; }
+  .stat {
+    flex: 1; border: 1.5px solid #16130e; text-align: center; padding: 5px 2px 4px;
+  }
+  .stat .num { font-size: 19px; font-weight: 900; line-height: 1.1; }
+  .stat .lbl {
+    font-family: Arial, Helvetica, sans-serif; font-size: 8px;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px;
+  }
+  .lead-photo img {
+    width: 400px; height: 216px; object-fit: cover; display: block;
+    border: 1px solid #16130e;
+  }
+  .lead-photo figcaption {
+    font-size: 12px; line-height: 1.3; font-style: italic;
+    color: #3d382e; margin-top: 5px;
+  }
 
-  /* ---------- story rows ---------- */
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
-  .story h3 { font-size: 24px; line-height: 1.1; font-weight: 900; }
-  .story p { font-size: 14.2px; line-height: 1.3; margin-top: 5px; text-align: justify; }
-  .story .kicker { margin-bottom: 4px; font-size: 11.5px; }
-  .story img.thumb { float: right; width: 118px; height: 168px; object-fit: cover; margin: 2px 0 6px 12px; }
-  .row2 { margin-top: 4px; }
-  .row2 h3 { font-size: 22.5px; }
-  .row2 p { font-size: 13.8px; }
+  /* ---- middle stories, two columns ---- */
+  .middle { display: flex; gap: 24px; padding: 9px 0 8px; border-bottom: 1px solid #16130e; }
+  .col { width: 464px; flex: none; }
+  .story { margin-bottom: 10px; }
+  .story:last-child { margin-bottom: 0; }
+  .story h3 { font-size: 23px; line-height: 1.1; font-weight: 900; margin-bottom: 5px; }
+  .story p { font-size: 13.5px; line-height: 1.42; text-align: justify; }
+  .story p b { font-weight: bold; }
+  .israel { display: flex; gap: 12px; }
+  .israel .txt { width: 320px; flex: none; }
+  .israel img {
+    width: 132px; height: 138px; object-fit: cover; display: block;
+    border: 1px solid #16130e; margin-top: 3px;
+  }
+  .rule-thin { border-top: 1px solid #8a8272; margin: 8px 0; }
 
-  /* ---------- sport band ---------- */
+  /* ---- sport band ---- */
   .sport {
-    background: #141310; color: #f8f4e9; margin-top: 6px;
-    display: grid; grid-template-columns: 250px 1fr; align-items: center;
-    padding: 4px 18px 4px 14px;
+    display: flex; gap: 18px; align-items: center;
+    background: #16130e; color: #f6f1e6;
+    margin: 9px 0; padding: 9px 16px;
   }
-  .sport .big { font-size: 46px; font-weight: 900; line-height: 0.95; }
-  .sport .big small { display: block; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; margin-top: 3px; }
-  .sport h3 { font-size: 21px; line-height: 1.12; font-weight: 900; }
-  .sport p { font-size: 13.2px; line-height: 1.3; margin-top: 4px; color: #ddd6c4; }
-  .sport .kicker { color: #ff5a4d; margin-bottom: 3px; }
+  .sport .big {
+    font-size: 36px; font-weight: 900; line-height: 0.95; letter-spacing: 1px;
+    text-align: center; flex: none; width: 180px;
+  }
+  .sport .big small {
+    display: block; font-size: 12px; letter-spacing: 4px; margin-top: 5px;
+  }
+  .sport .txt { flex: 1; }
+  .sport .txt .tag { color: #e8b4b8; margin-bottom: 3px; }
+  .sport .txt h3 { font-size: 20px; line-height: 1.12; font-weight: 900; margin-bottom: 4px; }
+  .sport .txt p { font-size: 12.5px; line-height: 1.4; color: #ddd6c4; }
 
-  /* ---------- briefs & footer ---------- */
-  .briefs { margin-top: 4px; border-top: 1px solid #141310; padding-top: 5px;
-    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12.4px; line-height: 1.45; }
-  .briefs b { letter-spacing: 1px; font-size: 11.5px; }
-  .briefs .dot { color: #b3001b; font-weight: 900; padding: 0 5px; }
+  /* ---- briefs footer ---- */
+  .briefs {
+    border-top: 3px solid #16130e; padding-top: 7px;
+    font-size: 12.5px; line-height: 1.45; text-align: justify;
+  }
+  .briefs .dot { color: #a31621; font-weight: bold; }
+  .briefs .lab {
+    font-family: Arial, Helvetica, sans-serif; font-size: 10.5px;
+    font-weight: bold; letter-spacing: 1px; text-transform: uppercase;
+  }
   .footer {
-    margin-top: 3px; border-top: 3px solid #141310; padding-top: 4px;
     display: flex; justify-content: space-between;
-    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; color: #44423a;
+    font-family: Arial, Helvetica, sans-serif; font-size: 10.5px; color: #55503f;
+    border-top: 1px solid #16130e; margin-top: 7px; padding-top: 5px;
   }
 </style>
 </head>
 <body>
+<div class="page">
 
-  <div class="topline"><span>One image · the whole day</span><span>Global edition</span><span>No. 26</span></div>
+  <div class="kicker">
+    <span>One image &middot; the whole day</span>
+    <span>Global edition</span>
+    <span>No. 26</span>
+  </div>
+
   <h1 class="masthead">THE WORLD TODAY</h1>
+
   <div class="dateline">
     <span class="date">Thursday, 26 November 2026</span>
-    <span class="mid">Hong Kong remembers 168 lost in the Tai Po fire</span>
+    <span class="teaser">Hong Kong remembers 168 lost in the Wang Fuk Court fire</span>
     <span>Price: one glance</span>
   </div>
 
   <!-- LEAD -->
-  <section class="lead">
-    <div>
-      <div class="kicker">Anniversary · Tai Po, Hong Kong</div>
-      <h2>One Year On, Hong Kong Mourns 168 Lost in the Tai Po Fire</h2>
-      <p>A year after flames tore through Wang Fuk Court &mdash; the city&rsquo;s deadliest fire since 1948
-      &mdash; survivors returned to the towers to mark the anniversary. A final independent report says the
-      blaze that killed <b>168 people</b> and displaced nearly 2,000 families was preventable: a lit
-      cigarette, fire-safety failures and alleged fraud in the renovation wrapping seven of the eight
-      31-storey blocks in scaffolding and netting. It raced at about 10 metres a second.</p>
+  <div class="lead">
+    <div class="lead-text">
+      <div class="tag">Anniversary &middot; Wang Fuk Court, Hong Kong</div>
+      <h2>One Year On, Hong Kong Mourns 168 Lost in the Fire</h2>
+      <p class="body">A year after flames tore through Wang Fuk Court &mdash; the city&rsquo;s deadliest
+      fire since 1948 &mdash; Hong Kong marked the anniversary of the blaze that killed
+      <b>168 people</b> and displaced nearly 2,000 families. A final independent report
+      says it was preventable: a lit cigarette, fire-safety failures and alleged fraud
+      in the renovation wrapping seven of the eight 31-storey blocks in scaffolding
+      and netting. It raced at about 10 metres a second.</p>
       <div class="stats">
-        <div><b>168</b><span>Lives lost</span></div>
-        <div><b>7 of 8</b><span>Blocks burned</span></div>
-        <div><b>10 m/s</b><span>Fire&rsquo;s spread</span></div>
-        <div><b>1 year</b><span>Since the blaze</span></div>
+        <div class="stat"><div class="num">168</div><div class="lbl">Lives lost</div></div>
+        <div class="stat"><div class="num">7 of 8</div><div class="lbl">Blocks burned</div></div>
+        <div class="stat"><div class="num">10 m/s</div><div class="lbl">Fire&rsquo;s spread</div></div>
+        <div class="stat"><div class="num">1 year</div><div class="lbl">Since the blaze</div></div>
       </div>
     </div>
-    <figure>
-      <img src="hero.jpg" alt="Wang Fuk Court towers in Tai Po, Hong Kong">
-      <figcaption>Wang Fuk Court in Tai Po, where residents laid flowers and candles a year after the fire. (Illustration)</figcaption>
+    <figure class="lead-photo">
+      <img src="hero.jpg" alt="Wang Fuk Court towers with memorial candles and flowers">
+      <figcaption>Wang Fuk Court in Hong Kong, where residents laid flowers and candles
+      a year after the fire. (Illustration)</figcaption>
     </figure>
-  </section>
+  </div>
 
-  <div class="rule"></div>
-
-  <!-- ROW 1 -->
-  <section class="row">
-    <article class="story">
-      <div class="kicker">Israel · Jerusalem</div>
-      <img class="thumb" src="gavel.jpg" alt="A judge's gavel">
-      <h3>Judges Urge Prosecutors to Drop Netanyahu Bribery Case</h3>
-      <p>Judges at the Jerusalem District Court told the attorney general the chances of conviction in
-      Case 4000 &mdash; the bribery case against prime minister <b>Benjamin Netanyahu</b> &mdash;
-      are low and the case should be dropped. They urged prosecutors to reconsider Case 2000 and seek a
-      deal in Case 1000. The advice is not a verdict. Netanyahu, who denies wrongdoing, demanded the
-      trial end &ldquo;immediately&rdquo;.</p>
-    </article>
-    <article class="story">
-      <div class="kicker">Egypt · Cairo</div>
-      <h3>31 Killed as Tanker Fire Engulfs Cairo Ring Road</h3>
-      <p>A tanker carrying petroleum products overturned in Giza&rsquo;s Al-Warraq district, spilling fuel
-      that set more than two dozen vehicles ablaze on the capital&rsquo;s ring road. Egypt&rsquo;s health
-      ministry put the toll at <b>31 dead and 21 injured</b>, and warned the count was preliminary as
-      firefighters cleared the charred wreckage above a tunnel in the densely packed neighbourhood.</p>
-    </article>
-  </section>
-
-  <!-- ROW 2 -->
-  <section class="row row2">
-    <article class="story">
-      <div class="kicker">Markets · New York</div>
-      <h3>AI Fears Deepen the Sell-Off on Wall Street</h3>
-      <p>US stocks fell further as fears over artificial intelligence intensified, with the tech-heavy
-      Nasdaq down almost 4% in early trading and all three main indexes lower. The slide extends a
-      rout in chip and software stocks as investors question AI spending.</p>
-    </article>
-    <article class="story">
-      <div class="kicker">Asia · Pyongyang</div>
-      <h3>North Korea Expels Swiss Envoy in Sanctions Row</h3>
-      <p>Pyongyang declared the head of Switzerland&rsquo;s diplomatic office, <b>Sylvain Astier</b>,
-      persona non grata and ordered him out within 48 hours, shutting an office Bern had reopened
-      only in October. The move answers Swiss sanctions on the Songdowon children&rsquo;s camp.</p>
-    </article>
-  </section>
+  <!-- MIDDLE -->
+  <div class="middle">
+    <div class="col">
+      <div class="story israel">
+        <div class="txt">
+          <div class="tag">Israel &middot; Jerusalem</div>
+          <h3>Judge Urges Prosecutors to Drop Netanyahu Bribery Case</h3>
+          <p>A Jerusalem District Court judge told the attorney general the chances of
+          conviction in the bribery case against prime minister <b>Benjamin Netanyahu</b>
+          &mdash; Case 4000 &mdash; are low and the case should be dropped. Prosecutors
+          were urged to reconsider Case 2000 and seek a deal in Case 1000. The advice
+          is not a ruling. Netanyahu, who denies wrongdoing, demanded the trial end
+          &ldquo;immediately&rdquo;.</p>
+        </div>
+        <img src="gavel.jpg" alt="A judge's gavel">
+      </div>
+      <div class="rule-thin"></div>
+      <div class="story">
+        <div class="tag">Markets &middot; New York</div>
+        <h3>AI Fears Deepen the Sell-Off on Wall Street</h3>
+        <p>US stocks fell further as fears over artificial intelligence intensified, with
+        the tech-heavy Nasdaq down almost 4% in early trading.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="story">
+        <div class="tag">Egypt &middot; Cairo</div>
+        <h3>31 Killed as Tanker Fire Engulfs Cairo Ring Road</h3>
+        <p>A tanker carrying petroleum products overturned in Giza&rsquo;s Al-Warraq district,
+        spilling fuel that set more than a dozen vehicles ablaze on the capital&rsquo;s ring
+        road. Egypt&rsquo;s health ministry put the toll at <b>31 dead and 21 injured</b>,
+        and warned the count was preliminary as firefighters cleared the charred
+        wreckage above a tunnel in the densely packed neighbourhood.</p>
+      </div>
+      <div class="rule-thin"></div>
+      <div class="story">
+        <div class="tag">Asia &middot; Pyongyang</div>
+        <h3>North Korea Expels Swiss Envoy in Sanctions Row</h3>
+        <p>Pyongyang declared the head of Switzerland&rsquo;s diplomatic office,
+        <b>Sylvain Astier</b>, persona non grata and ordered him out within 48 hours,
+        shutting an office Bern had reopened only in October. The move answers Swiss
+        sanctions on the Songdowon children&rsquo;s camp.</p>
+      </div>
+    </div>
+  </div>
 
   <!-- SPORT -->
-  <section class="sport">
+  <div class="sport">
     <div class="big">GENEVA<small>WORLD CHESS</small></div>
-    <div>
-      <div class="kicker">Sport · Chess, Geneva</div>
+    <div class="txt">
+      <div class="tag">Sport &middot; Chess, Geneva</div>
       <h3>Gukesh Faces Sindarov for the World Chess Crown</h3>
-      <p>India&rsquo;s reigning champion <b>D Gukesh</b> meets Uzbekistan&rsquo;s <b>Javokhir Sindarov</b> in
-      the 2026 World Chess Championship in Geneva, while India marks Constitution Day at home.</p>
+      <p>India&rsquo;s reigning champion D Gukesh meets Uzbekistan&rsquo;s Javokhir Sindarov in the
+      2026 World Chess Championship in Geneva.</p>
     </div>
-  </section>
+  </div>
 
   <!-- BRIEFS -->
   <div class="briefs">
-    <b>UKRAINE</b> Kyiv says a strike on Russia&rsquo;s Savasleyka air base damaged five jets &mdash; three MiG-31s and two Su-34s.<span class="dot">●</span><b>ENERGY</b> Houthis claim an attack on Saudi Arabia&rsquo;s Ras Tanura refinery; Brent crude tops $94.<span class="dot">●</span><b>HEALTH</b> Trump to meet senator-elect Abdul El-Sayed over his &lsquo;TrumpCare&rsquo; plan.<span class="dot">●</span><b>INDIA</b> Modi announces a Rs 15,000 crore package for Nepal.
+    <span class="lab">Ukraine</span> Kyiv says a strike on Russia&rsquo;s Savasleyka air base
+    damaged five jets &mdash; three MiG-31s and two Su-34s.
+    <span class="dot">&bull;</span> <span class="lab">Energy</span> Houthis claim an attack on
+    Saudi Arabia&rsquo;s Ras Tanura refinery; Brent crude tops $94.
+    <span class="dot">&bull;</span> <span class="lab">Health</span> Trump to meet senator-elect
+    Abdul El-Sayed over his &lsquo;TrumpCare&rsquo; plan.
+    <span class="dot">&bull;</span> <span class="lab">India</span> Modi announces a
+    Rs 15,000 crore package for Nepal.
   </div>
 
   <div class="footer">
     <span>Compiled from Reuters, BBC, AP and Xinhua reports</span>
-    <span>Thursday 26 November 2026 · The World Today</span>
+    <span>Thursday 26 November 2026 &middot; The World Today</span>
   </div>
 
+</div>
 </body>
 </html>

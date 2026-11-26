@@ -1,67 +1,89 @@
-// news-image-20261126 — "The World Today, Thursday 26 November 2026".
+// The World Today — 26 November 2026
+// Entry point: validate poster.png and copy it byte-for-byte to the
+// output directory as entry.png.
 //
-// Entry program for the make.fun bounty "Sum up 26 November's world news in
-// one image". The poster itself (poster.png, typeset in poster.html and
-// rendered once with headless Chromium) is the deliverable; this program
-// validates it rigorously and copies it, byte for byte, to
-// <output>/entry.png. Standard library only: no network, no clock, no
-// randomness — two runs always produce identical bytes.
+// Usage:  MAKEFUN_OUTPUT_DIR=/output node main.ts
+// (MAKEFUN_OUTPUT_DIR defaults to /output when unset.)
+//
+// Node standard library only — no network, no clock, no randomness.
 
 import { createHash } from "node:crypto";
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const MAX_BYTES = 1_048_576; // 1 MiB hard cap from the bounty rules
-const EXPECTED = 1024; // poster must be exactly 1024x1024
+const MAX_BYTES = 1_048_576;
+const EXPECTED_WIDTH = 1024;
+const EXPECTED_HEIGHT = 1024;
+
+// PNG signature: 89 50 4E 47 0D 0A 1A 0A
+const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+// IEND chunk tail: length 0, type "IEND", CRC AE 42 60 82
+const IEND_TAIL = Buffer.from([
+  0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
+]);
 
 function fail(message: string): never {
-  console.error(`news-image-26: ${message}`);
+  console.error(`error: ${message}`);
   process.exit(1);
 }
 
-const here = dirname(fileURLToPath(import.meta.url));
-const sourcePath = join(here, "poster.png");
-const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-const targetPath = join(outDir, "entry.png");
+function main(): void {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const sourcePath = join(here, "poster.png");
 
-let png: Buffer;
-try {
-  png = readFileSync(sourcePath);
-} catch {
-  fail(`poster.png is missing next to main.ts (${sourcePath})`);
+  if (!existsSync(sourcePath)) {
+    fail(`poster.png not found next to main.ts (${sourcePath})`);
+  }
+
+  const png = readFileSync(sourcePath);
+
+  // 1. Magic bytes: must be a PNG.
+  if (png.length < PNG_MAGIC.length || !png.subarray(0, 8).equals(PNG_MAGIC)) {
+    fail("poster.png is not a PNG file (bad magic bytes)");
+  }
+
+  // 2. Size cap: at most 1 MiB.
+  if (png.length > MAX_BYTES) {
+    fail(`poster.png is ${png.length} bytes, over the ${MAX_BYTES} byte cap`);
+  }
+
+  // 3. Dimensions from the IHDR chunk (width at bytes 16-19,
+  //    height at bytes 20-23, big-endian uint32).
+  if (png.length < 24 || png.toString("ascii", 12, 16) !== "IHDR") {
+    fail("poster.png has no IHDR chunk where one was expected");
+  }
+  const width = png.readUInt32BE(16);
+  const height = png.readUInt32BE(20);
+  if (width !== EXPECTED_WIDTH || height !== EXPECTED_HEIGHT) {
+    fail(
+      `poster.png is ${width}x${height}, expected ${EXPECTED_WIDTH}x${EXPECTED_HEIGHT}`,
+    );
+  }
+
+  // 4. Must end with the IEND chunk.
+  if (png.length < IEND_TAIL.length || !png.subarray(-12).equals(IEND_TAIL)) {
+    fail("poster.png does not end with an IEND chunk");
+  }
+
+  // 5. Copy byte-for-byte to the output directory as entry.png.
+  const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+  mkdirSync(outDir, { recursive: true });
+  const outPath = join(outDir, "entry.png");
+  copyFileSync(sourcePath, outPath);
+
+  // 6. Verify the copy: same size and same sha256.
+  const copied = readFileSync(outPath);
+  const sourceHash = createHash("sha256").update(png).digest("hex");
+  const copiedHash = createHash("sha256").update(copied).digest("hex");
+  if (copied.length !== png.length || copiedHash !== sourceHash) {
+    fail("entry.png does not match poster.png after copying");
+  }
+
+  console.log(
+    `ok: poster.png ${width}x${height}, ${png.length} bytes, ` +
+      `sha256 ${sourceHash} -> ${outPath}`,
+  );
 }
 
-// --- structural validation of the PNG -------------------------------------
-const MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
-if (png.length < 8 || !MAGIC.every((b, i) => png[i] === b)) {
-  fail("poster.png does not start with the PNG magic bytes");
-}
-if (png.length > MAX_BYTES) {
-  fail(`poster.png is ${png.length} bytes, over the 1 MiB cap`);
-}
-// IHDR is the first chunk: width and height are big-endian uint32 at 16/20.
-const width = png.readUInt32BE(16);
-const height = png.readUInt32BE(20);
-if (width !== EXPECTED || height !== EXPECTED) {
-  fail(`poster.png is ${width}x${height}, expected ${EXPECTED}x${EXPECTED}`);
-}
-// A well-formed PNG ends with the IEND chunk (type bytes at length-8).
-const tail = png.subarray(png.length - 8, png.length - 4).toString("latin1");
-if (tail !== "IEND") {
-  fail("poster.png does not end with an IEND chunk (truncated file?)");
-}
-
-// --- copy + verify ----------------------------------------------------------
-mkdirSync(outDir, { recursive: true });
-writeFileSync(targetPath, png);
-
-const written = readFileSync(targetPath);
-const digest = (buf: Buffer) => createHash("sha256").update(buf).digest("hex");
-if (!written.equals(png) || digest(written) !== digest(png)) {
-  fail("verification failed: entry.png differs from poster.png after copy");
-}
-
-console.log(
-  `news-image-26: wrote ${targetPath} (${png.length} bytes, sha256 ${digest(png)})`,
-);
+main();
